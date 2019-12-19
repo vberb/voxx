@@ -1,0 +1,6 @@
+voxx/secret_key.py
+
+.idea/
+venv/
+__pycache__/
+db.sqlite3
