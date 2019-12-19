@@ -1,21 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Question Details</title>
-</head>
-<body>
-    <h1>{{ question.question_text }}</h1>
+{% extends 'polls/base.html' %}
 
+
+{% block title %}
+	Question Details
+{% endblock %}
+
+
+{% block content_title %}
+	{{ question.question_text }}
+{% endblock %}
+
+
+{% block content %}
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
     <form action="{% url 'polls:vote' question.id %}" method="post">
         {% csrf_token %}
         {% for choice in question.choice_set.all %}
-            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+            <div class="form-group"><!-- hz... -->
+                <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input"
+                           name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                    <label class="custom-control-label"
+                           for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+                </div>
+            </div>
         {% endfor %}
-        <input type="submit" value="Vote">
+        <div class="p-3">
+            <input type="submit" class="btn btn-primary" value="Vote">
+        </div>
     </form>
-</body>
-</html>
+{% endblock %}
