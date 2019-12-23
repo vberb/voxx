@@ -1,5 +1,7 @@
 {% extends 'polls/base.html' %}
 
+{% load humanize %}
+
 
 {% block title %}
 	Poll results
@@ -7,18 +9,27 @@
 
 
 {% block content_title %}
-	{{ question.question_text }}" <small>(results)</small>
+	{{ question.question_text }} <small>(results)</small>
 {% endblock %}
 
 
 {% block content %}
-    <ul class="list-group">
-    {% for choice in question.choice_set.all %}
-        <li class="list-group-item">{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
-    {% endfor %}
-    </ul>
+	<ul class="list-group">
+	{% for choice in question.choice_set.all|dictsort:"rank" %}
+		<li class="list-group-item">
+			{% if question.voting_system == 'M' %}
+				{{ choice.rank|ordinal }} place, {{ choice.votes }} vote{{ choice.votes|pluralize }}
+					&ndash; {{ choice.choice_text }}
+			{% endif %}
 
-    <div class="p-3">
-        <a class="btn btn-secondary" href="{% url 'polls:detail' question.id %}">Vote again?</a>
-    </div>
+			{% if question.voting_system == 'S' %}
+				Rank {{ choice.rank }} &ndash; {{ choice.choice_text }}
+			{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+
+	<div class="p-3">
+		<a class="btn btn-secondary" href="{% url 'polls:detail' question.id %}">Vote again?</a>
+	</div>
 {% endblock %}
