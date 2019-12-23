@@ -1,18 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Poll results</title>
-</head>
-<body>
-    <h1>{{ question.question_text }}</h1>
+{% extends 'polls/base.html' %}
 
-    <ul>
-    {% for choice in question.choice_set.all %}
-        <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
-    {% endfor %}
-    </ul>
+{% load humanize %}
 
-    <a href="{% url 'polls:detail' question.id %}">Vote again?</a>
-</body>
-</html>
+
+{% block title %}
+	Poll results
+{% endblock %}
+
+
+{% block content_title %}
+	{{ question.question_text }} <small>(results)</small>
+{% endblock %}
+
+
+{% block content %}
+	<ul class="list-group">
+	{% for choice in question.choice_set.all|dictsort:"rank" %}
+		<li class="list-group-item">
+			{% if question.voting_system == 'M' %}
+				{{ choice.rank|ordinal }} place, {{ choice.votes }} vote{{ choice.votes|pluralize }}
+					&ndash; {{ choice.choice_text }}
+			{% endif %}
+
+			{% if question.voting_system == 'S' %}
+				Rank {{ choice.rank }} &ndash; {{ choice.choice_text }}
+			{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+
+	<div class="p-3">
+		<a class="btn btn-secondary" href="{% url 'polls:detail' question.id %}">Vote again?</a>
+	</div>
+{% endblock %}

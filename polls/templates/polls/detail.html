@@ -1,21 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Question Details</title>
-</head>
-<body>
-    <h1>{{ question.question_text }}</h1>
+{% extends 'polls/base.html' %}
 
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-    <form action="{% url 'polls:vote' question.id %}" method="post">
-        {% csrf_token %}
-        {% for choice in question.choice_set.all %}
-            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
-        {% endfor %}
-        <input type="submit" value="Vote">
-    </form>
-</body>
-</html>
+{% block title %}
+	Question Details
+{% endblock %}
+
+
+{% block content_title %}
+	{{ question.question_text }}
+{% endblock %}
+
+
+{% block content %}
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+	<form action="{% url 'polls:vote' question.id %}" method="post">
+		{% csrf_token %}
+		{% for choice in question.choice_set.all %}
+			 <div class="form-group md-3">
+
+			{% if question.voting_system == 'M' %}
+				<div class="custom-control custom-radio">
+					<input type="radio" class="custom-control-input"
+						   name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+					<label class="custom-control-label"
+						   for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+				</div>
+			{% endif %}
+
+			{% if question.voting_system == 'S' %}
+				<select class="custom-select w-auto"
+						name="select{{ choice.id }}" id="select{{ choice.id }}">
+					<option selected>&nbsp;</option>
+					{% for rank in question.choice_set.all %}
+						<option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+					{% endfor %}
+				</select>
+				<label class="mx-3" for="select{{ choice.id }}">{{ choice.choice_text }}</label>
+			{% endif %}
+
+			</div>
+		{% endfor %}
+		<div class="p-3">
+			<input type="submit" class="btn btn-primary" value="Vote">
+		</div>
+	</form>
+{% endblock %}
